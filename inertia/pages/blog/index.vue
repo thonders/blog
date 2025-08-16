@@ -466,19 +466,49 @@ function logout() {
       </div>
 
       <!-- Pagination -->
-      <div v-if="posts.meta.last_page > 1" class="mt-8 flex justify-center space-x-2">
+      <div v-if="posts.meta.last_page > 1" class="mt-8 flex justify-center items-center space-x-2">
+        <!-- Previous Button -->
         <Link
-          v-for="page in posts.meta.last_page"
-          :key="page"
-          :href="`/?page=${page}`"
-          :class="[
-            'px-3 py-2 rounded',
-            page === posts.meta.current_page
-              ? 'bg-primary text-white'
-              : 'bg-white border border-sand-7 text-sand-12 hover:bg-sand-2',
-          ]"
+          v-if="posts.meta.current_page > 1"
+          :href="`/?page=${posts.meta.current_page - 1}`"
+          class="px-3 py-2 rounded bg-white border border-sand-7 text-sand-12 hover:bg-sand-2 transition"
         >
-          {{ page }}
+          ← Previous
+        </Link>
+
+        <!-- Page Numbers -->
+        <template v-for="page in posts.meta.last_page" :key="page">
+          <Link
+            v-if="
+              Math.abs(page - posts.meta.current_page) <= 2 ||
+              page === 1 ||
+              page === posts.meta.last_page
+            "
+            :href="`/?page=${page}`"
+            :class="[
+              'px-3 py-2 rounded',
+              page === posts.meta.current_page
+                ? 'bg-primary text-white'
+                : 'bg-white border border-sand-7 text-sand-12 hover:bg-sand-2',
+            ]"
+          >
+            {{ page }}
+          </Link>
+          <span
+            v-else-if="Math.abs(page - posts.meta.current_page) === 3"
+            class="px-3 py-2 text-sand-10"
+          >
+            ...
+          </span>
+        </template>
+
+        <!-- Next Button -->
+        <Link
+          v-if="posts.meta.current_page < posts.meta.last_page"
+          :href="`/?page=${posts.meta.current_page + 1}`"
+          class="px-3 py-2 rounded bg-white border border-sand-7 text-sand-12 hover:bg-sand-2 transition"
+        >
+          Next →
         </Link>
       </div>
 

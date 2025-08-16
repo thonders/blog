@@ -58,7 +58,6 @@ export default class PostsController {
   async store({ request, response, auth }: HttpContext) {
     const data = request.only(['title', 'content', 'excerpt', 'status', 'categoryIds'])
 
-    // Extract categoryIds separately
     const { categoryIds, ...postData } = data
 
     const slug = postData.title
@@ -89,7 +88,6 @@ export default class PostsController {
 
     const data = request.only(['title', 'content', 'excerpt', 'status', 'categoryIds'])
 
-    // Extract categoryIds separately
     const { categoryIds, ...postData } = data
 
     if (postData.title !== post.title) {
