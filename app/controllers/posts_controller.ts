@@ -4,30 +4,54 @@ import Category from '#models/category'
 import { DateTime } from 'luxon'
 
 export default class PostsController {
-  async index({ inertia, request }: HttpContext) {
+  async index({ inertia, request, auth }: HttpContext) {
     const page = request.input('page', 1)
-    const posts = await Post.query()
-      .where('status', 'published')
+
+    const query = Post.query()
+
+    if (auth.user) {
+      query.where((builder) => {
+        builder.where('status', 'published').orWhere('userId', auth.user!.id)
+      })
+    } else {
+      query.where('status', 'published')
+    }
+
+    const posts = await query
       .preload('user')
       .preload('categories')
       .orderBy('publishedAt', 'desc')
       .paginate(page, 10)
 
+    const categories = await Category.all()
+
     return inertia.render('blog/index', {
       posts: posts.serialize(),
+      categories: categories.map((cat) => cat.serialize()),
+      auth: {
+        user: auth.user ? auth.user.serialize() : null,
+      },
     })
   }
 
-  async show({ params, inertia }: HttpContext) {
-    const post = await Post.query()
-      .where('slug', params.slug)
-      .where('status', 'published')
-      .preload('user')
-      .preload('categories')
-      .firstOrFail()
+  async show({ params, inertia, auth }: HttpContext) {
+    const query = Post.query().where('slug', params.slug)
+
+    if (!auth.user) {
+      query.where('status', 'published')
+    } else {
+      query.where((builder) => {
+        builder.where('status', 'published').orWhere('userId', auth.user!.id)
+      })
+    }
+
+    const post = await query.preload('user').preload('categories').firstOrFail()
 
     return inertia.render('blog/show', {
       post: post.serialize(),
+      auth: {
+        user: auth.user ? auth.user.serialize() : null,
+      },
     })
   }
 
@@ -72,8 +96,13 @@ export default class PostsController {
     })
   }
 
-  async update({ params, request, response }: HttpContext) {
+  async update({ params, request, response, auth }: HttpContext) {
     const post = await Post.findByOrFail('slug', params.slug)
+
+    if (post.userId !== auth.user!.id) {
+      return response.abort('You can only edit your own posts', 403)
+    }
+
     const data = request.only(['title', 'content', 'excerpt', 'status', 'categoryIds'])
 
     if (data.title !== post.title) {
@@ -89,15 +118,20 @@ export default class PostsController {
 
     await post.merge(data).save()
 
-    if (data.categoryIds) {
+    if (data.categoryIds !== undefined) {
       await post.related('categories').sync(data.categoryIds)
     }
 
     return response.redirect().toRoute('blog.show', { slug: post.slug })
   }
 
-  async destroy({ params, response }: HttpContext) {
+  async destroy({ params, response, auth }: HttpContext) {
     const post = await Post.findByOrFail('slug', params.slug)
+
+    if (post.userId !== auth.user!.id) {
+      return response.abort('You can only delete your own posts', 403)
+    }
+
     await post.delete()
 
     return response.redirect().toRoute('blog.index')
