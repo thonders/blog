@@ -32,12 +32,13 @@ function submit() {
         <div class="space-y-4">
           <div>
             <label for="fullName" class="block text-sm font-medium text-sand-12 mb-2">
-              Full Name (Optional)
+              Full Name
             </label>
             <input
               id="fullName"
               v-model="form.fullName"
               type="text"
+              required
               class="w-full px-3 py-2 border border-sand-7 rounded-md focus:ring-primary focus:border-primary"
               placeholder="Enter your full name"
             />

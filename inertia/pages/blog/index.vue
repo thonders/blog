@@ -101,7 +101,7 @@ function cancelEdit() {
 }
 
 function submitCreate() {
-  createForm.post('/blog/posts', {
+  createForm.post('/posts', {
     onSuccess: () => {
       showCreateForm.value = false
       createForm.reset()
@@ -112,7 +112,7 @@ function submitCreate() {
 function submitEdit() {
   if (!editingPost.value) return
 
-  editForm.put(`/blog/posts/${editingPost.value.slug}`, {
+  editForm.put(`/posts/${editingPost.value.slug}`, {
     onSuccess: () => {
       editingPost.value = null
       editForm.reset()
@@ -122,7 +122,7 @@ function submitEdit() {
 
 function deletePost(slug: string) {
   if (confirm('Are you sure you want to delete this post?')) {
-    useForm({}).delete(`/blog/posts/${slug}`)
+    useForm({}).delete(`/posts/${slug}`)
   }
 }
 
@@ -426,7 +426,7 @@ function logout() {
             </div>
 
             <h2 class="text-2xl font-bold text-sand-12 mb-4">
-              <Link :href="`/blog/post/${post.slug}`" class="hover:text-primary transition">
+              <Link :href="`/p/${post.slug}`" class="hover:text-primary transition">
                 {{ post.title }}
               </Link>
             </h2>
@@ -470,7 +470,7 @@ function logout() {
         <Link
           v-for="page in posts.meta.last_page"
           :key="page"
-          :href="`/blog?page=${page}`"
+          :href="`/?page=${page}`"
           :class="[
             'px-3 py-2 rounded',
             page === posts.meta.current_page

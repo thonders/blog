@@ -55,45 +55,29 @@ export default class PostsController {
     })
   }
 
-  async create({ inertia }: HttpContext) {
-    const categories = await Category.all()
-
-    return inertia.render('blog/create', {
-      categories: categories.map((cat) => cat.serialize()),
-    })
-  }
-
   async store({ request, response, auth }: HttpContext) {
     const data = request.only(['title', 'content', 'excerpt', 'status', 'categoryIds'])
 
-    const slug = data.title
+    // Extract categoryIds separately
+    const { categoryIds, ...postData } = data
+
+    const slug = postData.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
 
     const post = await Post.create({
-      ...data,
+      ...postData,
       slug,
       userId: auth.user!.id,
-      publishedAt: data.status === 'published' ? DateTime.now() : null,
+      publishedAt: postData.status === 'published' ? DateTime.now() : null,
     })
 
-    if (data.categoryIds && data.categoryIds.length > 0) {
-      await post.related('categories').attach(data.categoryIds)
+    if (categoryIds && categoryIds.length > 0) {
+      await post.related('categories').attach(categoryIds)
     }
 
     return response.redirect().toRoute('blog.show', { slug: post.slug })
-  }
-
-  async edit({ params, inertia }: HttpContext) {
-    const post = await Post.query().where('slug', params.slug).preload('categories').firstOrFail()
-
-    const categories = await Category.all()
-
-    return inertia.render('blog/edit', {
-      post: post.serialize(),
-      categories: categories.map((cat) => cat.serialize()),
-    })
   }
 
   async update({ params, request, response, auth }: HttpContext) {
@@ -105,21 +89,24 @@ export default class PostsController {
 
     const data = request.only(['title', 'content', 'excerpt', 'status', 'categoryIds'])
 
-    if (data.title !== post.title) {
-      data.slug = data.title
+    // Extract categoryIds separately
+    const { categoryIds, ...postData } = data
+
+    if (postData.title !== post.title) {
+      postData.slug = postData.title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '')
     }
 
-    if (data.status === 'published' && post.status !== 'published') {
-      data.publishedAt = DateTime.now()
+    if (postData.status === 'published' && post.status !== 'published') {
+      postData.publishedAt = DateTime.now()
     }
 
-    await post.merge(data).save()
+    await post.merge(postData).save()
 
-    if (data.categoryIds !== undefined) {
-      await post.related('categories').sync(data.categoryIds)
+    if (categoryIds !== undefined) {
+      await post.related('categories').sync(categoryIds)
     }
 
     return response.redirect().toRoute('blog.show', { slug: post.slug })

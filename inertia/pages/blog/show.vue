@@ -18,8 +18,17 @@ interface Post {
   }>
 }
 
+interface Auth {
+  user: {
+    id: number
+    fullName: string
+    email: string
+  } | null
+}
+
 defineProps<{
   post: Post
+  auth: Auth
 }>()
 </script>
 
@@ -29,7 +38,7 @@ defineProps<{
   <div class="min-h-screen bg-sand-1">
     <header class="bg-white border-b border-sand-7">
       <div class="max-w-4xl mx-auto px-6 py-8">
-        <Link href="/blog" class="text-primary hover:text-primary/80 transition mb-4 inline-block">
+        <Link href="/" class="text-primary hover:text-primary/80 transition mb-4 inline-block">
           ← Back to Blog
         </Link>
 
@@ -51,9 +60,6 @@ defineProps<{
           <span>By {{ post.user.fullName || post.user.email }}</span>
           <div class="flex items-center space-x-4">
             <span>{{ new Date(post.publishedAt).toLocaleDateString() }}</span>
-            <Link :href="`/blog/post/${post.slug}/edit`" class="text-primary hover:text-primary/80">
-              Edit
-            </Link>
           </div>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
-import hash from '@adonisjs/core/services/hash'
 import vine from '@vinejs/vine'
 
 export default class AuthController {
@@ -24,7 +23,7 @@ export default class AuthController {
   async register({ request, response, auth }: HttpContext) {
     const validator = vine.compile(
       vine.object({
-        fullName: vine.string().trim().minLength(2).maxLength(100).optional(),
+        fullName: vine.string().trim().minLength(2).maxLength(100),
         email: vine
           .string()
           .trim()

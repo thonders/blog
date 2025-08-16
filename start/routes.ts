@@ -11,7 +11,7 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 
 router.get('/', '#controllers/posts_controller.index').as('blog.index')
-router.get('/post/:slug', '#controllers/posts_controller.show').as('blog.show')
+router.get('/p/:slug', '#controllers/posts_controller.show').as('blog.show')
 
 router
   .group(() => {

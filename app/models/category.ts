@@ -22,6 +22,8 @@ export default class Category extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 
-  @manyToMany(() => Post)
+  @manyToMany(() => Post, {
+    pivotTimestamps: true,
+  })
   declare posts: ManyToMany<typeof Post>
 }
