@@ -23,34 +23,13 @@ export default class PostsController {
       .preload('categories')
       .orderBy('published_at', 'desc')
       .orderBy('created_at', 'desc')
-      .paginate(page, 2)
+      .paginate(page, 10)
 
     const categories = await Category.all()
 
     return inertia.render('blog/index', {
       posts: posts.serialize(),
       categories: categories.map((cat) => cat.serialize()),
-      auth: {
-        user: auth.user ? auth.user.serialize() : null,
-      },
-    })
-  }
-
-  async show({ params, inertia, auth }: HttpContext) {
-    const query = Post.query().where('slug', params.slug)
-
-    if (auth.user) {
-      query.where((builder) => {
-        builder.where('status', 'published').orWhere('userId', auth.user!.id)
-      })
-    } else {
-      query.where('status', 'published')
-    }
-
-    const post = await query.preload('user').preload('categories').firstOrFail()
-
-    return inertia.render('blog/show', {
-      post: post.serialize(),
       auth: {
         user: auth.user ? auth.user.serialize() : null,
       },
@@ -90,6 +69,27 @@ export default class PostsController {
     }
 
     return response.redirect().toRoute('blog.show', { slug: post.slug })
+  }
+
+  async show({ params, inertia, auth }: HttpContext) {
+    const query = Post.query().where('slug', params.slug)
+
+    if (auth.user) {
+      query.where((builder) => {
+        builder.where('status', 'published').orWhere('userId', auth.user!.id)
+      })
+    } else {
+      query.where('status', 'published')
+    }
+
+    const post = await query.preload('user').preload('categories').firstOrFail()
+
+    return inertia.render('blog/show', {
+      post: post.serialize(),
+      auth: {
+        user: auth.user ? auth.user.serialize() : null,
+      },
+    })
   }
 
   async update({ params, request, response, auth }: HttpContext) {
