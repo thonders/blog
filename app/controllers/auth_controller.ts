@@ -33,7 +33,7 @@ export default class AuthController {
             const user = await db.from('users').where('email', value).first()
             return !user
           }),
-        password: vine.string().minLength(6).confirmed(),
+        password: vine.string().minLength(8).confirmed(),
       })
     )
 
