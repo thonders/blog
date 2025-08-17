@@ -11,6 +11,7 @@ export default class AuthController {
     const { email, password } = request.only(['email', 'password'])
 
     const user = await User.verifyCredentials(email, password)
+
     await auth.use('web').login(user)
 
     return response.redirect().toRoute('blog.index')
@@ -51,6 +52,7 @@ export default class AuthController {
 
   async logout({ auth, response }: HttpContext) {
     await auth.use('web').logout()
+
     return response.redirect().toRoute('auth.login')
   }
 }
