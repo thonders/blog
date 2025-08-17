@@ -31,10 +31,15 @@ interface Category {
 interface PaginatedPosts {
   data: Post[]
   meta: {
-    current_page: number
-    last_page: number
-    per_page: number
+    currentPage: number
+    lastPage: number
+    perPage: number
     total: number
+    firstPage: number
+    firstPageUrl: string
+    lastPageUrl: string
+    nextPageUrl: string | null
+    previousPageUrl: string | null
   }
 }
 
@@ -466,28 +471,28 @@ function logout() {
       </div>
 
       <!-- Pagination -->
-      <div v-if="posts.meta.last_page > 1" class="mt-8 flex justify-center items-center space-x-2">
+      <div v-if="posts.meta.lastPage > 1" class="mt-8 flex justify-center items-center space-x-2">
         <!-- Previous Button -->
         <Link
-          v-if="posts.meta.current_page > 1"
-          :href="`/?page=${posts.meta.current_page - 1}`"
+          v-if="posts.meta.currentPage > 1"
+          :href="`/?page=${posts.meta.currentPage - 1}`"
           class="px-3 py-2 rounded bg-white border border-sand-7 text-sand-12 hover:bg-sand-2 transition"
         >
           ← Previous
         </Link>
 
         <!-- Page Numbers -->
-        <template v-for="page in posts.meta.last_page" :key="page">
+        <template v-for="page in posts.meta.lastPage" :key="page">
           <Link
             v-if="
-              Math.abs(page - posts.meta.current_page) <= 2 ||
+              Math.abs(page - posts.meta.currentPage) <= 2 ||
               page === 1 ||
-              page === posts.meta.last_page
+              page === posts.meta.lastPage
             "
             :href="`/?page=${page}`"
             :class="[
               'px-3 py-2 rounded',
-              page === posts.meta.current_page
+              page === posts.meta.currentPage
                 ? 'bg-primary text-white'
                 : 'bg-white border border-sand-7 text-sand-12 hover:bg-sand-2',
             ]"
@@ -495,7 +500,7 @@ function logout() {
             {{ page }}
           </Link>
           <span
-            v-else-if="Math.abs(page - posts.meta.current_page) === 3"
+            v-else-if="Math.abs(page - posts.meta.currentPage) === 3"
             class="px-3 py-2 text-sand-10"
           >
             ...
@@ -504,8 +509,8 @@ function logout() {
 
         <!-- Next Button -->
         <Link
-          v-if="posts.meta.current_page < posts.meta.last_page"
-          :href="`/?page=${posts.meta.current_page + 1}`"
+          v-if="posts.meta.currentPage < posts.meta.lastPage"
+          :href="`/?page=${posts.meta.currentPage + 1}`"
           class="px-3 py-2 rounded bg-white border border-sand-7 text-sand-12 hover:bg-sand-2 transition"
         >
           Next →
