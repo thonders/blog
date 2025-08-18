@@ -30,9 +30,6 @@ export default class PostsController {
     return inertia.render('blog/index', {
       posts: posts.serialize(),
       categories: categories.map((cat) => cat.serialize()),
-      auth: {
-        user: auth.user ? auth.user.serialize() : null,
-      },
     })
   }
 
@@ -86,9 +83,6 @@ export default class PostsController {
 
     return inertia.render('blog/show', {
       post: post.serialize(),
-      auth: {
-        user: auth.user ? auth.user.serialize() : null,
-      },
     })
   }
 
