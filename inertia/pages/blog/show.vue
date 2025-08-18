@@ -1,5 +1,14 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3'
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 
 interface Post {
   id: number
@@ -57,7 +66,7 @@ defineProps<{
         </h1>
 
         <div class="flex items-center justify-between text-sm text-sand-10">
-          <span>By {{ post.user.fullName || post.user.email }}</span>
+          <span>By {{ post.user.fullName }}</span>
           <div class="flex items-center space-x-4">
             <span>{{ new Date(post.publishedAt).toLocaleDateString() }}</span>
           </div>

@@ -1,6 +1,34 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3'
+import { Pen, Trash } from 'lucide-vue-next'
+import App from '@/layouts/app.vue'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface Post {
   id: number
@@ -51,7 +79,7 @@ interface Auth {
   } | null
 }
 
-const props = defineProps<{
+const page = usePage<{
   posts: PaginatedPosts
   categories: Category[]
   auth: Auth
@@ -59,7 +87,6 @@ const props = defineProps<{
 
 const showCreateForm = ref(false)
 const editingPost = ref<Post | null>(null)
-const showUserMenu = ref(false)
 
 const createForm = useForm({
   title: '',
@@ -77,9 +104,7 @@ const editForm = useForm({
   categoryIds: [] as number[],
 })
 
-const logoutForm = useForm({})
-
-const isAuthenticated = computed(() => props.auth.user !== null)
+const isAuthenticated = computed(() => page.props.auth.user !== null)
 
 function startCreating() {
   showCreateForm.value = true
@@ -126,426 +151,306 @@ function submitEdit() {
 }
 
 function deletePost(slug: string) {
-  if (confirm('Are you sure you want to delete this post?')) {
-    useForm({}).delete(`/posts/${slug}`)
-  }
-}
-
-function logout() {
-  logoutForm.post('/logout')
+  useForm({}).delete(`/posts/${slug}`)
 }
 </script>
 
 <template>
-  <Head title="Blog" />
+  <Head title="Home" />
 
-  <div class="min-h-screen bg-sand-1">
-    <header class="bg-white border-b border-sand-7">
-      <div class="max-w-4xl mx-auto px-6 py-8">
-        <div class="flex justify-between items-center">
-          <h1 class="text-3xl font-bold text-sand-12">Blog</h1>
-
-          <div v-if="isAuthenticated" class="flex items-center space-x-4">
-            <button
-              @click="startCreating"
-              class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition"
-            >
-              Write Post
-            </button>
-
-            <!-- User Menu -->
-            <div class="relative">
-              <button
-                @click="showUserMenu = !showUserMenu"
-                class="flex items-center space-x-2 bg-sand-2 hover:bg-sand-3 px-3 py-2 rounded-lg transition"
-              >
-                <div
-                  class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium"
-                >
-                  {{ auth.user?.fullName?.charAt(0) || auth.user?.email.charAt(0) }}
-                </div>
-                <span class="text-sand-12">{{ auth.user?.fullName || auth.user?.email }}</span>
-                <svg class="w-4 h-4 text-sand-10" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fill-rule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </button>
-
-              <div
-                v-if="showUserMenu"
-                class="absolute right-0 mt-2 w-48 bg-white border border-sand-7 rounded-lg shadow-lg py-1"
-              >
-                <button
-                  @click="logout"
-                  class="w-full text-left px-4 py-2 text-sm text-sand-12 hover:bg-sand-2 transition"
-                >
-                  Sign out
-                </button>
-              </div>
-            </div>
+  <App>
+    <div class="min-h-screen bg-background">
+      <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex justify-between items-center mb-8">
+          <div>
+            <h1 class="text-3xl font-bold text-foreground">Latest Posts</h1>
+            <p class="text-muted-foreground mt-1">
+              Discover stories, thinking, and expertise from writers on any topic.
+            </p>
           </div>
 
-          <div v-else class="flex space-x-3">
-            <Link
-              href="/login"
-              class="bg-sand-7 text-sand-12 px-4 py-2 rounded-lg hover:bg-sand-8 transition"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition"
-            >
-              Register
-            </Link>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <main class="max-w-4xl mx-auto px-6 py-8">
-      <!-- Create Form -->
-      <div v-if="showCreateForm" class="bg-white border border-sand-7 rounded-lg p-6 mb-8">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-sand-12">Create New Post</h2>
-          <button @click="cancelCreate" class="text-sand-10 hover:text-sand-12 transition">
-            ✕
-          </button>
+          <Button v-if="isAuthenticated" @click="startCreating">Write Post</Button>
         </div>
 
-        <form @submit.prevent="submitCreate" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-sand-12 mb-2">Title</label>
-            <input
-              v-model="createForm.title"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-sand-7 rounded-md focus:ring-primary focus:border-primary"
-              placeholder="Enter post title..."
-            />
-            <div v-if="createForm.errors.title" class="text-red-500 text-sm mt-1">
-              {{ createForm.errors.title }}
+        <Card v-if="showCreateForm" class="mb-8">
+          <CardHeader>
+            <div class="flex justify-between items-center">
+              <CardTitle>Create New Post</CardTitle>
+              <Button variant="ghost" size="icon" @click="cancelCreate">✕</Button>
             </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-sand-12 mb-2">Excerpt (Optional)</label>
-            <textarea
-              v-model="createForm.excerpt"
-              rows="2"
-              class="w-full px-3 py-2 border border-sand-7 rounded-md focus:ring-primary focus:border-primary"
-              placeholder="Brief description of your post..."
-            ></textarea>
-            <div v-if="createForm.errors.excerpt" class="text-red-500 text-sm mt-1">
-              {{ createForm.errors.excerpt }}
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-sand-12 mb-2">Content</label>
-            <textarea
-              v-model="createForm.content"
-              rows="10"
-              required
-              class="w-full px-3 py-2 border border-sand-7 rounded-md focus:ring-primary focus:border-primary"
-              placeholder="Write your post content..."
-            ></textarea>
-            <div v-if="createForm.errors.content" class="text-red-500 text-sm mt-1">
-              {{ createForm.errors.content }}
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-sand-12 mb-2">Categories</label>
-            <div class="flex flex-wrap gap-2">
-              <label
-                v-for="category in categories"
-                :key="category.id"
-                class="flex items-center space-x-2 bg-sand-2 px-3 py-1 rounded cursor-pointer hover:bg-sand-3"
-              >
-                <input
-                  v-model="createForm.categoryIds"
-                  type="checkbox"
-                  :value="category.id"
-                  class="text-primary focus:ring-primary"
-                />
-                <span class="text-sm">{{ category.name }}</span>
-              </label>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-sand-12 mb-2">Status</label>
-            <select
-              v-model="createForm.status"
-              class="px-3 py-2 border border-sand-7 rounded-md focus:ring-primary focus:border-primary"
-            >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-            </select>
-          </div>
-
-          <div class="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              @click="cancelCreate"
-              class="px-4 py-2 text-sand-11 border border-sand-7 rounded-md hover:bg-sand-2 transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              :disabled="createForm.processing"
-              class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition disabled:opacity-50"
-            >
-              {{ createForm.processing ? 'Creating...' : 'Create Post' }}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Posts List -->
-      <div class="space-y-8">
-        <article
-          v-for="post in posts.data"
-          :key="post.id"
-          class="bg-white border border-sand-7 rounded-lg p-6 hover:shadow-sm transition"
-        >
-          <!-- Edit Form -->
-          <div v-if="editingPost?.id === post.id" class="space-y-4">
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="text-lg font-bold text-sand-12">Edit Post</h3>
-              <button @click="cancelEdit" class="text-sand-10 hover:text-sand-12 transition">
-                ✕
-              </button>
-            </div>
-
-            <form @submit.prevent="submitEdit" class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-sand-12 mb-2">Title</label>
-                <input
-                  v-model="editForm.title"
-                  type="text"
+          </CardHeader>
+          <CardContent>
+            <form @submit.prevent="submitCreate" class="space-y-6">
+              <div class="grid gap-3">
+                <Label for="create-title">Title</Label>
+                <Input
+                  id="create-title"
+                  v-model="createForm.title"
+                  placeholder="Enter post title..."
                   required
-                  class="w-full px-3 py-2 border border-sand-7 rounded-md focus:ring-primary focus:border-primary"
                 />
-                <div v-if="editForm.errors.title" class="text-red-500 text-sm mt-1">
-                  {{ editForm.errors.title }}
+                <div v-if="createForm.errors.title" class="text-destructive text-sm">
+                  {{ createForm.errors.title }}
                 </div>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-sand-12 mb-2"
-                  >Excerpt (Optional)</label
-                >
-                <textarea
-                  v-model="editForm.excerpt"
+              <div class="grid gap-3">
+                <Label for="create-excerpt">Excerpt (Optional)</Label>
+                <Textarea
+                  id="create-excerpt"
+                  v-model="createForm.excerpt"
                   rows="2"
-                  class="w-full px-3 py-2 border border-sand-7 rounded-md focus:ring-primary focus:border-primary"
-                ></textarea>
+                  placeholder="Brief description of your post..."
+                />
+                <div v-if="createForm.errors.excerpt" class="text-destructive text-sm">
+                  {{ createForm.errors.excerpt }}
+                </div>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-sand-12 mb-2">Content</label>
-                <textarea
-                  v-model="editForm.content"
-                  rows="8"
+              <div class="grid gap-3">
+                <Label for="create-content">Content</Label>
+                <Textarea
+                  id="create-content"
+                  v-model="createForm.content"
+                  rows="10"
                   required
-                  class="w-full px-3 py-2 border border-sand-7 rounded-md focus:ring-primary focus:border-primary"
-                ></textarea>
-                <div v-if="editForm.errors.content" class="text-red-500 text-sm mt-1">
-                  {{ editForm.errors.content }}
+                  placeholder="Write your post content..."
+                />
+                <div v-if="createForm.errors.content" class="text-destructive text-sm">
+                  {{ createForm.errors.content }}
                 </div>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-sand-12 mb-2">Categories</label>
-                <div class="flex flex-wrap gap-2">
-                  <label
-                    v-for="category in categories"
-                    :key="category.id"
-                    class="flex items-center space-x-2 bg-sand-2 px-3 py-1 rounded cursor-pointer hover:bg-sand-3"
-                  >
-                    <input
-                      v-model="editForm.categoryIds"
-                      type="checkbox"
-                      :value="category.id"
-                      class="text-primary focus:ring-primary"
-                    />
-                    <span class="text-sm">{{ category.name }}</span>
-                  </label>
-                </div>
+              <div class="grid gap-3">
+                <Label for="create-status">Status</Label>
+                <Select v-model="createForm.status">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="published">Published</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-sand-12 mb-2">Status</label>
-                <select
-                  v-model="editForm.status"
-                  class="px-3 py-2 border border-sand-7 rounded-md focus:ring-primary focus:border-primary"
-                >
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                </select>
-              </div>
-
-              <div class="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  @click="cancelEdit"
-                  class="px-4 py-2 text-sand-11 border border-sand-7 rounded-md hover:bg-sand-2 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  :disabled="editForm.processing"
-                  class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition disabled:opacity-50"
-                >
-                  {{ editForm.processing ? 'Updating...' : 'Update Post' }}
-                </button>
+              <div class="flex justify-end space-x-3">
+                <Button type="button" variant="outline" @click="cancelCreate"> Cancel </Button>
+                <Button type="submit" :disabled="createForm.processing">
+                  {{ createForm.processing ? 'Creating...' : 'Create Post' }}
+                </Button>
               </div>
             </form>
-          </div>
+          </CardContent>
+        </Card>
 
-          <!-- Post Display -->
-          <div v-else>
-            <div class="flex justify-between items-start mb-4">
-              <div class="flex flex-wrap gap-2">
-                <span
-                  v-for="category in post.categories"
-                  :key="category.id"
-                  class="text-xs px-2 py-1 bg-sand-3 text-sand-11 rounded"
-                >
-                  {{ category.name }}
-                </span>
-                <span
-                  v-if="post.status === 'draft'"
-                  class="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 rounded"
-                >
-                  Draft
-                </span>
-              </div>
-            </div>
-
-            <h2 class="text-2xl font-bold text-sand-12 mb-4">
-              <Link :href="`/p/${post.slug}`" class="hover:text-primary transition">
-                {{ post.title }}
-              </Link>
-            </h2>
-
-            <p v-if="post.excerpt" class="text-sand-11 mb-4">
-              {{ post.excerpt }}
-            </p>
-
-            <div class="flex items-center justify-between text-sm text-sand-10">
-              <span>By {{ post.user.fullName || post.user.email }}</span>
-              <div class="flex items-center space-x-4">
-                <span v-if="post.publishedAt">
-                  {{ new Date(post.publishedAt).toLocaleDateString() }}
-                </span>
-                <span v-else class="text-yellow-600">Not published</span>
-                <div
-                  v-if="isAuthenticated && auth.user?.id === post.user.id"
-                  class="flex space-x-2"
-                >
-                  <button
-                    @click="startEditing(post)"
-                    class="text-primary hover:text-primary/80 transition"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    @click="deletePost(post.slug)"
-                    class="text-red-600 hover:text-red-700 transition"
-                  >
-                    Delete
-                  </button>
+        <div class="space-y-6">
+          <template v-for="post in page.props.posts.data" :key="post.id">
+            <Card v-if="editingPost?.id === post.id">
+              <CardHeader>
+                <div class="flex justify-between items-center">
+                  <CardTitle>Edit Post</CardTitle>
+                  <Button variant="ghost" size="icon" @click="cancelEdit">✕</Button>
                 </div>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
+              </CardHeader>
+              <CardContent>
+                <form @submit.prevent="submitEdit" class="space-y-6">
+                  <div class="grid gap-3">
+                    <Label for="edit-title">Title</Label>
+                    <Input id="edit-title" v-model="editForm.title" required />
+                    <div v-if="editForm.errors.title" class="text-destructive text-sm">
+                      {{ editForm.errors.title }}
+                    </div>
+                  </div>
 
-      <!-- Pagination -->
-      <div v-if="posts.meta.lastPage > 1" class="mt-8 flex justify-center items-center space-x-2">
-        <!-- Previous Button -->
-        <Link
-          v-if="posts.meta.currentPage > 1"
-          :href="`/?page=${posts.meta.currentPage - 1}`"
-          class="px-3 py-2 rounded bg-white border border-sand-7 text-sand-12 hover:bg-sand-2 transition"
-        >
-          ← Previous
-        </Link>
+                  <div class="grid gap-3">
+                    <Label for="edit-excerpt">Excerpt (Optional)</Label>
+                    <Textarea id="edit-excerpt" v-model="editForm.excerpt" rows="2" />
+                  </div>
 
-        <!-- Page Numbers -->
-        <template v-for="page in posts.meta.lastPage" :key="page">
-          <Link
-            v-if="
-              Math.abs(page - posts.meta.currentPage) <= 2 ||
-              page === 1 ||
-              page === posts.meta.lastPage
-            "
-            :href="`/?page=${page}`"
-            :class="[
-              'px-3 py-2 rounded',
-              page === posts.meta.currentPage
-                ? 'bg-primary text-white'
-                : 'bg-white border border-sand-7 text-sand-12 hover:bg-sand-2',
-            ]"
-          >
-            {{ page }}
-          </Link>
-          <span
-            v-else-if="Math.abs(page - posts.meta.currentPage) === 3"
-            class="px-3 py-2 text-sand-10"
-          >
-            ...
-          </span>
-        </template>
+                  <div class="grid gap-3">
+                    <Label for="edit-content">Content</Label>
+                    <Textarea id="edit-content" v-model="editForm.content" rows="8" required />
+                    <div v-if="editForm.errors.content" class="text-destructive text-sm">
+                      {{ editForm.errors.content }}
+                    </div>
+                  </div>
 
-        <!-- Next Button -->
-        <Link
-          v-if="posts.meta.currentPage < posts.meta.lastPage"
-          :href="`/?page=${posts.meta.currentPage + 1}`"
-          class="px-3 py-2 rounded bg-white border border-sand-7 text-sand-12 hover:bg-sand-2 transition"
-        >
-          Next →
-        </Link>
-      </div>
+                  <div class="grid gap-3">
+                    <Label for="edit-status">Status</Label>
+                    <Select v-model="editForm.status">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="published">Published</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-      <!-- Empty State -->
-      <div v-if="posts.data.length === 0" class="text-center py-12">
-        <div class="text-sand-10 mb-4">
-          <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-            />
-          </svg>
+                  <div class="flex justify-end space-x-3">
+                    <Button type="button" variant="outline" @click="cancelEdit"> Cancel </Button>
+                    <Button type="submit" :disabled="editForm.processing">
+                      {{ editForm.processing ? 'Updating...' : 'Update Post' }}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card v-else class="hover:shadow-md transition-shadow">
+              <CardContent>
+                <div class="flex justify-between items-start">
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      v-for="category in post.categories"
+                      :key="category.id"
+                      class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                    >
+                      {{ category.name }}
+                    </span>
+                    <span
+                      v-if="post.status === 'draft'"
+                      class="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+                    >
+                      Draft
+                    </span>
+                  </div>
+
+                  <div
+                    v-if="isAuthenticated && page.props.auth.user.id === post.user.id"
+                    class="flex space-x-2"
+                  >
+                    <Button variant="ghost" size="icon" @click="startEditing(post)">
+                      <Pen />
+                    </Button>
+
+                    <AlertDialog>
+                      <AlertDialogTrigger as-child>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          class="text-destructive hover:text-destructive"
+                        >
+                          <Trash />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your post and
+                            remove it from our servers.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction @click="deletePost(post.slug)">
+                            Delete Post
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-foreground mb-3">
+                  <Link :href="`/p/${post.slug}`" class="hover:text-primary transition-colors">
+                    {{ post.title }}
+                  </Link>
+                </h2>
+
+                <p v-if="post.excerpt" class="text-muted-foreground mb-4 line-clamp-2">
+                  {{ post.excerpt }}
+                </p>
+
+                <div class="flex items-center justify-between text-sm text-muted-foreground">
+                  <div class="flex items-center space-x-2">
+                    <div
+                      class="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium"
+                    >
+                      {{ post.user.fullName.charAt(0) }}
+                    </div>
+                    <span>{{ post.user.fullName }}</span>
+                  </div>
+                  <div class="flex items-center space-x-4">
+                    <span v-if="post.publishedAt">
+                      {{ new Date(post.publishedAt).toLocaleDateString() }}
+                    </span>
+                    <span v-else class="text-muted-foreground"> Not published </span>
+                    <Link :href="`/p/${post.slug}`" class="text-primary hover:underline">
+                      Read more →
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </template>
         </div>
-        <h3 class="text-lg font-medium text-sand-12 mb-2">No posts yet</h3>
-        <p class="text-sand-10 mb-4">Get started by creating your first blog post.</p>
-        <button
-          v-if="isAuthenticated"
-          @click="startCreating"
-          class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition"
+
+        <div
+          v-if="page.props.posts.meta.lastPage > 1"
+          class="mt-8 flex justify-center items-center space-x-2"
         >
-          Create Your First Post
-        </button>
-        <Link
-          v-else
-          href="/register"
-          class="inline-block bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition"
-        >
-          Sign up to create posts
-        </Link>
-      </div>
-    </main>
-  </div>
+          <Button v-if="page.props.posts.meta.currentPage > 1" variant="outline" as-child>
+            <Link :href="`/?page=${page.props.posts.meta.currentPage - 1}`"> ← Previous </Link>
+          </Button>
+
+          <template v-for="pageNum in page.props.posts.meta.lastPage" :key="pageNum">
+            <Button
+              v-if="
+                Math.abs(pageNum - page.props.posts.meta.currentPage) <= 2 ||
+                pageNum === 1 ||
+                pageNum === page.props.posts.meta.lastPage
+              "
+              :variant="pageNum === page.props.posts.meta.currentPage ? 'default' : 'outline'"
+              as-child
+            >
+              <Link :href="`/?page=${pageNum}`">
+                {{ pageNum }}
+              </Link>
+            </Button>
+            <span
+              v-else-if="Math.abs(pageNum - page.props.posts.meta.currentPage) === 3"
+              class="px-3 py-2 text-muted-foreground"
+            >
+              ...
+            </span>
+          </template>
+
+          <Button
+            v-if="page.props.posts.meta.currentPage < page.props.posts.meta.lastPage"
+            variant="outline"
+            as-child
+          >
+            <Link :href="`/?page=${page.props.posts.meta.currentPage + 1}`"> Next → </Link>
+          </Button>
+        </div>
+
+        <Card v-if="page.props.posts.data.length === 0" class="text-center py-12">
+          <CardContent class="pt-6">
+            <div class="text-muted-foreground mb-4">
+              <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                />
+              </svg>
+            </div>
+            <CardTitle class="mb-2">No posts yet</CardTitle>
+            <CardDescription class="mb-4">
+              Get started by creating your first blog post.
+            </CardDescription>
+            <Button v-if="isAuthenticated" @click="startCreating"> Create Your First Post </Button>
+            <Button v-else as-child>
+              <Link href="/register"> Sign up to create posts </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  </App>
 </template>
