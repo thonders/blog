@@ -558,8 +558,13 @@ function deletePost(slug: string) {
           v-if="page.props.posts.meta.lastPage > 1"
           class="mt-8 flex justify-center items-center space-x-2"
         >
-          <Button v-if="page.props.posts.meta.currentPage > 1" variant="outline" as-child>
-            <Link :href="`/?page=${page.props.posts.meta.currentPage - 1}`"> ← Previous </Link>
+          <Button
+            v-if="page.props.posts.meta.currentPage > 1"
+            variant="outline"
+            class="w-10 h-10 flex items-center justify-center"
+            as-child
+          >
+            <Link :href="`/?page=${page.props.posts.meta.currentPage - 1}`"><</Link>
           </Button>
 
           <template v-for="pageNum in page.props.posts.meta.lastPage" :key="pageNum">
@@ -570,6 +575,7 @@ function deletePost(slug: string) {
                 pageNum === page.props.posts.meta.lastPage
               "
               :variant="pageNum === page.props.posts.meta.currentPage ? 'default' : 'outline'"
+              class="w-10 h-10 flex items-center justify-center"
               as-child
             >
               <Link :href="`/?page=${pageNum}`">
@@ -587,9 +593,10 @@ function deletePost(slug: string) {
           <Button
             v-if="page.props.posts.meta.currentPage < page.props.posts.meta.lastPage"
             variant="outline"
+            class="w-10 h-10 flex items-center justify-center"
             as-child
           >
-            <Link :href="`/?page=${page.props.posts.meta.currentPage + 1}`"> Next → </Link>
+            <Link :href="`/?page=${page.props.posts.meta.currentPage + 1}`">></Link>
           </Button>
         </div>
 
