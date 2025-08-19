@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3'
 import { Pen, Trash } from 'lucide-vue-next'
+import { useFilter } from 'reka-ui'
 import App from '@/layouts/app.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,16 +20,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Combobox,
+  ComboboxAnchor,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/components/ui/combobox'
+import {
+  TagsInput,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputItemDelete,
+  TagsInputItemText,
+} from '@/components/ui/tags-input'
 
 interface Post {
   id: number
@@ -85,8 +99,17 @@ const page = usePage<{
   auth: Auth
 }>()
 
+const isAuthenticated = computed(() => page.props.auth.user !== null)
+
 const showCreateForm = ref(false)
 const editingPost = ref<Post | null>(null)
+
+const selectedCategories = ref<string[]>([])
+const editSelectedCategories = ref<string[]>([])
+const open = ref(false)
+const editOpen = ref(false)
+const searchTerm = ref('')
+const editSearchTerm = ref('')
 
 const createForm = useForm({
   title: '',
@@ -104,10 +127,29 @@ const editForm = useForm({
   categoryIds: [] as number[],
 })
 
-const isAuthenticated = computed(() => page.props.auth.user !== null)
+const { contains } = useFilter({ sensitivity: 'base' })
+
+const filteredCategories = computed(() => {
+  const options = page.props.categories.filter(
+    (category) => !selectedCategories.value.includes(category.name)
+  )
+  return searchTerm.value
+    ? options.filter((category) => contains(category.name, searchTerm.value))
+    : options
+})
+
+const editFilteredCategories = computed(() => {
+  const options = page.props.categories.filter(
+    (category) => !editSelectedCategories.value.includes(category.name)
+  )
+  return editSearchTerm.value
+    ? options.filter((category) => contains(category.name, editSearchTerm.value))
+    : options
+})
 
 function startCreating() {
   showCreateForm.value = true
+  selectedCategories.value = []
   createForm.reset()
 }
 
@@ -118,22 +160,32 @@ function startEditing(post: Post) {
   editForm.excerpt = post.excerpt || ''
   editForm.status = post.status as 'draft' | 'published'
   editForm.categoryIds = post.categories.map((cat) => cat.id)
+  editSelectedCategories.value = post.categories.map((cat) => cat.name)
 }
 
 function cancelCreate() {
   showCreateForm.value = false
+  selectedCategories.value = []
   createForm.reset()
 }
 
 function cancelEdit() {
   editingPost.value = null
+  editSelectedCategories.value = []
   editForm.reset()
 }
 
 function submitCreate() {
+  const categoryIds = page.props.categories
+    .filter((category) => selectedCategories.value.includes(category.name))
+    .map((category) => category.id)
+
+  createForm.categoryIds = categoryIds
+
   createForm.post('/posts', {
     onSuccess: () => {
       showCreateForm.value = false
+      selectedCategories.value = []
       createForm.reset()
     },
   })
@@ -142,9 +194,16 @@ function submitCreate() {
 function submitEdit() {
   if (!editingPost.value) return
 
+  const categoryIds = page.props.categories
+    .filter((category) => editSelectedCategories.value.includes(category.name))
+    .map((category) => category.id)
+
+  editForm.categoryIds = categoryIds
+
   editForm.put(`/posts/${editingPost.value.slug}`, {
     onSuccess: () => {
       editingPost.value = null
+      editSelectedCategories.value = []
       editForm.reset()
     },
   })
@@ -222,6 +281,55 @@ function deletePost(slug: string) {
               </div>
 
               <div class="grid gap-3">
+                <Label for="create-categories">Categories</Label>
+                <Combobox v-model="selectedCategories" v-model:open="open" :ignore-filter="true">
+                  <ComboboxAnchor as-child>
+                    <TagsInput v-model="selectedCategories" class="px-2 gap-2 w-80">
+                      <div class="flex gap-2 flex-wrap items-center">
+                        <TagsInputItem v-for="item in selectedCategories" :key="item" :value="item">
+                          <TagsInputItemText />
+                          <TagsInputItemDelete />
+                        </TagsInputItem>
+                      </div>
+
+                      <ComboboxInput v-model="searchTerm" as-child>
+                        <TagsInputInput
+                          placeholder="Add a category..."
+                          class="min-w-[200px] w-full p-0 border-none focus-visible:ring-0 h-auto"
+                          @keydown.enter.prevent
+                        />
+                      </ComboboxInput>
+                    </TagsInput>
+
+                    <ComboboxList>
+                      <ComboboxEmpty>No categories found.</ComboboxEmpty>
+                      <ComboboxGroup>
+                        <ComboboxItem
+                          v-for="category in filteredCategories"
+                          :key="category.id"
+                          :value="category.name"
+                          @select.prevent="
+                            (ev) => {
+                              if (typeof ev.detail.value === 'string') {
+                                searchTerm = ''
+                                selectedCategories.push(ev.detail.value)
+                              }
+
+                              if (filteredCategories.length === 0) {
+                                open = false
+                              }
+                            }
+                          "
+                        >
+                          {{ category.name }}
+                        </ComboboxItem>
+                      </ComboboxGroup>
+                    </ComboboxList>
+                  </ComboboxAnchor>
+                </Combobox>
+              </div>
+
+              <div class="grid gap-3">
                 <Label for="create-status">Status</Label>
                 <Select v-model="createForm.status">
                   <SelectTrigger>
@@ -277,6 +385,63 @@ function deletePost(slug: string) {
                   </div>
 
                   <div class="grid gap-3">
+                    <Label for="edit-categories">Categories</Label>
+                    <Combobox
+                      v-model="editSelectedCategories"
+                      v-model:open="editOpen"
+                      :ignore-filter="true"
+                    >
+                      <ComboboxAnchor as-child>
+                        <TagsInput v-model="editSelectedCategories" class="px-2 gap-2 w-80">
+                          <div class="flex gap-2 flex-wrap items-center">
+                            <TagsInputItem
+                              v-for="item in editSelectedCategories"
+                              :key="item"
+                              :value="item"
+                            >
+                              <TagsInputItemText />
+                              <TagsInputItemDelete />
+                            </TagsInputItem>
+                          </div>
+
+                          <ComboboxInput v-model="editSearchTerm" as-child>
+                            <TagsInputInput
+                              placeholder="Add a category..."
+                              class="min-w-[200px] w-full p-0 border-none focus-visible:ring-0 h-auto"
+                              @keydown.enter.prevent
+                            />
+                          </ComboboxInput>
+                        </TagsInput>
+
+                        <ComboboxList>
+                          <ComboboxEmpty>No categories found.</ComboboxEmpty>
+                          <ComboboxGroup>
+                            <ComboboxItem
+                              v-for="category in editFilteredCategories"
+                              :key="category.id"
+                              :value="category.name"
+                              @select.prevent="
+                                (ev) => {
+                                  if (typeof ev.detail.value === 'string') {
+                                    editSearchTerm = ''
+                                    editSelectedCategories.push(ev.detail.value)
+                                  }
+
+                                  if (editFilteredCategories.length === 0) {
+                                    editOpen = false
+                                  }
+                                }
+                              "
+                            >
+                              {{ category.name }}
+                            </ComboboxItem>
+                          </ComboboxGroup>
+                        </ComboboxList>
+                      </ComboboxAnchor>
+                    </Combobox>
+                  </div>
+
+                  <div class="grid gap-3">
                     <Label for="edit-status">Status</Label>
                     <Select v-model="editForm.status">
                       <SelectTrigger>
@@ -319,7 +484,7 @@ function deletePost(slug: string) {
                   </div>
 
                   <div
-                    v-if="isAuthenticated && page.props.auth.user.id === post.user.id"
+                    v-if="isAuthenticated && page.props.auth.user?.id === post.user.id"
                     class="flex space-x-2"
                   >
                     <Button variant="ghost" size="icon" @click="startEditing(post)">

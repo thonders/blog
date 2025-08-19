@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,13 +50,12 @@ function logout() {
                 <Button variant="ghost" class="relative h-10 w-auto px-3">
                   <div class="flex items-center space-x-2">
                     <Avatar class="h-8 w-8">
-                      <AvatarImage :src="undefined" :alt="page.props.auth.user.fullName" />
                       <AvatarFallback class="bg-primary text-primary-foreground text-sm">
-                        {{ page.props.auth.user.fullName.charAt(0) }}
+                        {{ page.props.auth.user?.fullName.charAt(0) }}
                       </AvatarFallback>
                     </Avatar>
                     <span class="text-foreground hidden sm:inline-block">{{
-                      page.props.auth.user.fullName
+                      page.props.auth.user?.fullName
                     }}</span>
                     <svg
                       class="w-4 h-4 text-muted-foreground ml-1"
@@ -78,10 +77,10 @@ function logout() {
                 <DropdownMenuLabel class="font-normal">
                   <div class="flex flex-col space-y-1">
                     <p class="text-sm font-medium leading-none">
-                      {{ page.props.auth.user.fullName }}
+                      {{ page.props.auth.user?.fullName }}
                     </p>
                     <p class="text-xs leading-none text-muted-foreground">
-                      {{ page.props.auth.user.email }}
+                      {{ page.props.auth.user?.email }}
                     </p>
                   </div>
                 </DropdownMenuLabel>
