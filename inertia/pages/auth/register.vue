@@ -61,7 +61,7 @@ function submit() {
                         id="fullName"
                         v-model="form.fullName"
                         type="text"
-                        placeholder="Enter your full name"
+                        placeholder="John Smith"
                         required
                       />
                       <div v-if="form.errors.fullName" class="text-destructive text-sm">
@@ -74,7 +74,7 @@ function submit() {
                         id="email"
                         v-model="form.email"
                         type="email"
-                        placeholder="m@example.com"
+                        placeholder="john@smith.com"
                         required
                       />
                       <div v-if="form.errors.email" class="text-destructive text-sm">

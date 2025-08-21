@@ -12,21 +12,19 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-interface User {
-  id: number
-  fullName: string
-  email: string
-}
-
 interface Auth {
-  user: User | null
+  user: {
+    id: number
+    fullName: string
+    email: string
+  } | null
 }
 
 const page = usePage<{ auth: Auth }>()
 
-const logoutForm = useForm({})
-
 const isAuthenticated = computed(() => page.props.auth.user !== null)
+
+const logoutForm = useForm({})
 
 function logout() {
   logoutForm.post('/logout')

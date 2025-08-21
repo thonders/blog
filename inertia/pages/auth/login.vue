@@ -62,7 +62,7 @@ function submit() {
                         id="email"
                         v-model="form.email"
                         type="email"
-                        placeholder="m@example.com"
+                        placeholder="john@smith.com"
                         required
                       />
                       <div

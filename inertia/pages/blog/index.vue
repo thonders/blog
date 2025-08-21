@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3'
+import { Head, Link, useForm } from '@inertiajs/vue3'
 import { Pen, Trash } from 'lucide-vue-next'
 import { useFilter } from 'reka-ui'
 import App from '@/layouts/app.vue'
@@ -93,13 +93,13 @@ interface Auth {
   } | null
 }
 
-const page = usePage<{
+const props = defineProps<{
   posts: PaginatedPosts
   categories: Category[]
   auth: Auth
 }>()
 
-const isAuthenticated = computed(() => page.props.auth.user !== null)
+const isAuthenticated = computed(() => props.auth.user !== null)
 
 const showCreateForm = ref(false)
 const editingPost = ref<Post | null>(null)
@@ -130,7 +130,7 @@ const editForm = useForm({
 const { contains } = useFilter({ sensitivity: 'base' })
 
 const filteredCategories = computed(() => {
-  const options = page.props.categories.filter(
+  const options = props.categories.filter(
     (category) => !selectedCategories.value.includes(category.name)
   )
   return searchTerm.value
@@ -139,7 +139,7 @@ const filteredCategories = computed(() => {
 })
 
 const editFilteredCategories = computed(() => {
-  const options = page.props.categories.filter(
+  const options = props.categories.filter(
     (category) => !editSelectedCategories.value.includes(category.name)
   )
   return editSearchTerm.value
@@ -176,7 +176,7 @@ function cancelEdit() {
 }
 
 function submitCreate() {
-  const categoryIds = page.props.categories
+  const categoryIds = props.categories
     .filter((category) => selectedCategories.value.includes(category.name))
     .map((category) => category.id)
 
@@ -194,7 +194,7 @@ function submitCreate() {
 function submitEdit() {
   if (!editingPost.value) return
 
-  const categoryIds = page.props.categories
+  const categoryIds = props.categories
     .filter((category) => editSelectedCategories.value.includes(category.name))
     .map((category) => category.id)
 
@@ -245,8 +245,8 @@ function deletePost(slug: string) {
                 <Input
                   id="create-title"
                   v-model="createForm.title"
-                  placeholder="Enter post title..."
                   required
+                  placeholder="Enter your post title"
                 />
                 <div v-if="createForm.errors.title" class="text-destructive text-sm">
                   {{ createForm.errors.title }}
@@ -259,7 +259,7 @@ function deletePost(slug: string) {
                   id="create-excerpt"
                   v-model="createForm.excerpt"
                   rows="2"
-                  placeholder="Brief description of your post..."
+                  placeholder="Write a brief summary of your post"
                 />
                 <div v-if="createForm.errors.excerpt" class="text-destructive text-sm">
                   {{ createForm.errors.excerpt }}
@@ -273,7 +273,7 @@ function deletePost(slug: string) {
                   v-model="createForm.content"
                   rows="10"
                   required
-                  placeholder="Write your post content..."
+                  placeholder="Write your post content"
                 />
                 <div v-if="createForm.errors.content" class="text-destructive text-sm">
                   {{ createForm.errors.content }}
@@ -294,7 +294,7 @@ function deletePost(slug: string) {
 
                       <ComboboxInput v-model="searchTerm" as-child>
                         <TagsInputInput
-                          placeholder="Add a category..."
+                          placeholder="Category..."
                           class="min-w-[200px] w-full p-0 border-none focus-visible:ring-0 h-auto"
                           @keydown.enter.prevent
                         />
@@ -343,7 +343,7 @@ function deletePost(slug: string) {
               </div>
 
               <div class="flex justify-end space-x-3">
-                <Button type="button" variant="outline" @click="cancelCreate"> Cancel </Button>
+                <Button type="button" variant="outline" @click="cancelCreate">Cancel</Button>
                 <Button type="submit" :disabled="createForm.processing">
                   {{ createForm.processing ? 'Creating...' : 'Create Post' }}
                 </Button>
@@ -353,7 +353,7 @@ function deletePost(slug: string) {
         </Card>
 
         <div class="space-y-6">
-          <template v-for="post in page.props.posts.data" :key="post.id">
+          <template v-for="post in props.posts.data" :key="post.id">
             <Card v-if="editingPost?.id === post.id">
               <CardHeader>
                 <div class="flex justify-between items-center">
@@ -365,7 +365,12 @@ function deletePost(slug: string) {
                 <form @submit.prevent="submitEdit" class="space-y-6">
                   <div class="grid gap-3">
                     <Label for="edit-title">Title</Label>
-                    <Input id="edit-title" v-model="editForm.title" required />
+                    <Input
+                      id="edit-title"
+                      v-model="editForm.title"
+                      required
+                      placeholder="Enter your post title"
+                    />
                     <div v-if="editForm.errors.title" class="text-destructive text-sm">
                       {{ editForm.errors.title }}
                     </div>
@@ -373,12 +378,23 @@ function deletePost(slug: string) {
 
                   <div class="grid gap-3">
                     <Label for="edit-excerpt">Excerpt (Optional)</Label>
-                    <Textarea id="edit-excerpt" v-model="editForm.excerpt" rows="2" />
+                    <Textarea
+                      id="edit-excerpt"
+                      v-model="editForm.excerpt"
+                      rows="2"
+                      placeholder="Write a brief summary of your post"
+                    />
                   </div>
 
                   <div class="grid gap-3">
                     <Label for="edit-content">Content</Label>
-                    <Textarea id="edit-content" v-model="editForm.content" rows="8" required />
+                    <Textarea
+                      id="edit-content"
+                      v-model="editForm.content"
+                      rows="8"
+                      required
+                      placeholder="Write your post content"
+                    />
                     <div v-if="editForm.errors.content" class="text-destructive text-sm">
                       {{ editForm.errors.content }}
                     </div>
@@ -406,7 +422,7 @@ function deletePost(slug: string) {
 
                           <ComboboxInput v-model="editSearchTerm" as-child>
                             <TagsInputInput
-                              placeholder="Add a category..."
+                              placeholder="Category..."
                               class="min-w-[200px] w-full p-0 border-none focus-visible:ring-0 h-auto"
                               @keydown.enter.prevent
                             />
@@ -455,7 +471,7 @@ function deletePost(slug: string) {
                   </div>
 
                   <div class="flex justify-end space-x-3">
-                    <Button type="button" variant="outline" @click="cancelEdit"> Cancel </Button>
+                    <Button type="button" variant="outline" @click="cancelEdit">Cancel</Button>
                     <Button type="submit" :disabled="editForm.processing">
                       {{ editForm.processing ? 'Updating...' : 'Update Post' }}
                     </Button>
@@ -484,7 +500,7 @@ function deletePost(slug: string) {
                   </div>
 
                   <div
-                    v-if="isAuthenticated && page.props.auth.user?.id === post.user.id"
+                    v-if="isAuthenticated && props.auth.user?.id === post.user.id"
                     class="flex space-x-2"
                   >
                     <Button variant="ghost" size="icon" @click="startEditing(post)">
@@ -541,12 +557,9 @@ function deletePost(slug: string) {
                   </div>
                   <div class="flex items-center space-x-4">
                     <span v-if="post.publishedAt">
-                      {{ new Date(post.publishedAt).toLocaleDateString() }}
+                      {{ new Date(post.publishedAt).toLocaleDateString('en-UK') }}
                     </span>
-                    <span v-else class="text-muted-foreground"> Not published </span>
-                    <Link :href="`/p/${post.slug}`" class="text-primary hover:underline">
-                      Read more →
-                    </Link>
+                    <span v-else class="text-muted-foreground">Not published</span>
                   </div>
                 </div>
               </CardContent>
@@ -555,26 +568,26 @@ function deletePost(slug: string) {
         </div>
 
         <div
-          v-if="page.props.posts.meta.lastPage > 1"
+          v-if="props.posts.meta.lastPage > 1"
           class="mt-8 flex justify-center items-center space-x-2"
         >
           <Button
-            v-if="page.props.posts.meta.currentPage > 1"
+            v-if="props.posts.meta.currentPage > 1"
             variant="outline"
             class="w-10 h-10 flex items-center justify-center"
             as-child
           >
-            <Link :href="`/?page=${page.props.posts.meta.currentPage - 1}`"><</Link>
+            <Link :href="`/?page=${props.posts.meta.currentPage - 1}`"><</Link>
           </Button>
 
-          <template v-for="pageNum in page.props.posts.meta.lastPage" :key="pageNum">
+          <template v-for="pageNum in props.posts.meta.lastPage" :key="pageNum">
             <Button
               v-if="
-                Math.abs(pageNum - page.props.posts.meta.currentPage) <= 2 ||
+                Math.abs(pageNum - props.posts.meta.currentPage) <= 2 ||
                 pageNum === 1 ||
-                pageNum === page.props.posts.meta.lastPage
+                pageNum === props.posts.meta.lastPage
               "
-              :variant="pageNum === page.props.posts.meta.currentPage ? 'default' : 'outline'"
+              :variant="pageNum === props.posts.meta.currentPage ? 'default' : 'outline'"
               class="w-10 h-10 flex items-center justify-center"
               as-child
             >
@@ -583,7 +596,7 @@ function deletePost(slug: string) {
               </Link>
             </Button>
             <span
-              v-else-if="Math.abs(pageNum - page.props.posts.meta.currentPage) === 3"
+              v-else-if="Math.abs(pageNum - props.posts.meta.currentPage) === 3"
               class="px-3 py-2 text-muted-foreground"
             >
               ...
@@ -591,16 +604,16 @@ function deletePost(slug: string) {
           </template>
 
           <Button
-            v-if="page.props.posts.meta.currentPage < page.props.posts.meta.lastPage"
+            v-if="props.posts.meta.currentPage < props.posts.meta.lastPage"
             variant="outline"
             class="w-10 h-10 flex items-center justify-center"
             as-child
           >
-            <Link :href="`/?page=${page.props.posts.meta.currentPage + 1}`">></Link>
+            <Link :href="`/?page=${props.posts.meta.currentPage + 1}`">></Link>
           </Button>
         </div>
 
-        <Card v-if="page.props.posts.data.length === 0" class="text-center py-12">
+        <Card v-if="props.posts.data.length === 0" class="text-center py-12">
           <CardContent class="pt-6">
             <div class="text-muted-foreground mb-4">
               <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
