@@ -104,17 +104,7 @@ defineProps<{
           <footer class="border-t border-border pt-8 mt-12">
             <div class="flex justify-between items-center">
               <Button variant="outline" as-child>
-                <Link href="/">
-                  <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                    />
-                  </svg>
-                  Back to Home
-                </Link>
+                <Link href="/">Back to Home</Link>
               </Button>
 
               <div class="text-center">
