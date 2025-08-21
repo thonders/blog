@@ -97,11 +97,8 @@ defineProps<{
             </div>
           </header>
 
-          <div class="prose prose-lg max-w-none">
-            <div
-              class="text-foreground leading-relaxed space-y-4"
-              v-html="post.content.replace(/\n/g, '<br>')"
-            />
+          <div class="prose prose-lg prose-slate dark:prose-invert max-w-none">
+            <div v-html="post.content" />
           </div>
 
           <footer class="border-t border-border pt-8 mt-12">

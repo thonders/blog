@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { TiptapEditor } from '@/components/ui/tiptap'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -268,12 +269,10 @@ function deletePost(slug: string) {
 
               <div class="grid gap-3">
                 <Label for="create-content">Content</Label>
-                <Textarea
-                  id="create-content"
+                <TiptapEditor
                   v-model="createForm.content"
-                  rows="10"
-                  required
-                  placeholder="Write your post content"
+                  placeholder="Write your post content..."
+                  :limit="10000"
                 />
                 <div v-if="createForm.errors.content" class="text-destructive text-sm">
                   {{ createForm.errors.content }}
@@ -388,12 +387,10 @@ function deletePost(slug: string) {
 
                   <div class="grid gap-3">
                     <Label for="edit-content">Content</Label>
-                    <Textarea
-                      id="edit-content"
+                    <TiptapEditor
                       v-model="editForm.content"
-                      rows="8"
-                      required
-                      placeholder="Write your post content"
+                      placeholder="Write your post content..."
+                      :limit="10000"
                     />
                     <div v-if="editForm.errors.content" class="text-destructive text-sm">
                       {{ editForm.errors.content }}
