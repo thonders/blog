@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
+import { useColorMode } from '@vueuse/core'
+import { Icon } from '@iconify/vue'
+import { ChevronDown, Home, User, Settings, LogOut } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -11,6 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+
+const mode = useColorMode()
 
 interface Auth {
   user: {
@@ -37,11 +42,32 @@ function logout() {
       <div class="flex justify-between items-center h-16">
         <div class="flex items-center space-x-8">
           <Link href="/" class="text-xl font-bold text-foreground hover:text-primary transition">
-            Blog
+            AdonisJS
           </Link>
         </div>
 
         <div class="flex items-center space-x-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="outline">
+                <Icon
+                  icon="radix-icons:moon"
+                  class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+                />
+                <Icon
+                  icon="radix-icons:sun"
+                  class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+                />
+                <span class="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem @click="mode = 'light'"> Light </DropdownMenuItem>
+              <DropdownMenuItem @click="mode = 'dark'"> Dark </DropdownMenuItem>
+              <DropdownMenuItem @click="mode = 'auto'"> System </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <template v-if="isAuthenticated">
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
@@ -55,19 +81,7 @@ function logout() {
                     <span class="text-foreground hidden sm:inline-block">{{
                       page.props.auth.user?.fullName
                     }}</span>
-                    <svg
-                      class="w-4 h-4 text-muted-foreground ml-1"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                    <ChevronDown class="size-4 text-muted-foreground" />
                   </div>
                 </Button>
               </DropdownMenuTrigger>
@@ -85,65 +99,25 @@ function logout() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem as-child>
                   <Link href="/" class="cursor-pointer">
-                    <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-                      />
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="m8 5 4-3 4 3"
-                      />
-                    </svg>
+                    <Home class="size-4" />
                     Dashboard
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem as-child>
                   <Link href="/profile" class="cursor-pointer">
-                    <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
+                    <User class="size-4" />
                     Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem as-child>
                   <Link href="/settings" class="cursor-pointer">
-                    <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                      />
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
+                    <Settings class="size-4" />
                     Settings
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem @click="logout" class="cursor-pointer">
-                  <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                    />
-                  </svg>
+                  <LogOut class="size-4" />
                   Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>
