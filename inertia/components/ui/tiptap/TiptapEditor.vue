@@ -317,14 +317,16 @@ const unsetLink = () => {
 
 .tiptap-content :deep(.ProseMirror ul) {
   list-style-type: disc;
-  list-style-position: inside;
+  list-style-position: outside;
   margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
 }
 
 .tiptap-content :deep(.ProseMirror ol) {
   list-style-type: decimal;
-  list-style-position: inside;
+  list-style-position: outside;
   margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
 }
 
 .tiptap-content :deep(.ProseMirror li) {
@@ -392,11 +394,13 @@ const unsetLink = () => {
 
 .tiptap-content :deep(.ProseMirror ul[data-type='bulletList']) {
   list-style-type: disc;
+  list-style-position: outside;
   padding-left: 1.5rem;
 }
 
 .tiptap-content :deep(.ProseMirror ol[data-type='orderedList']) {
   list-style-type: decimal;
+  list-style-position: outside;
   padding-left: 1.5rem;
 }
 

@@ -97,7 +97,7 @@ defineProps<{
             </div>
           </header>
 
-          <div class="prose prose-lg prose-slate dark:prose-invert max-w-none">
+          <div class="prose md:prose-lg prose-neutral dark:prose-invert">
             <div v-html="post.content" />
           </div>
 
