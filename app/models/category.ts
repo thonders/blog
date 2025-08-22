@@ -8,6 +8,9 @@ export default class Category extends BaseModel {
   declare id: number
 
   @column()
+  declare userId: number
+
+  @column()
   declare name: string
 
   @column()

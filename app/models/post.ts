@@ -9,6 +9,9 @@ export default class Post extends BaseModel {
   declare id: number
 
   @column()
+  declare userId: number
+
+  @column()
   declare title: string
 
   @column()
@@ -22,9 +25,6 @@ export default class Post extends BaseModel {
 
   @column()
   declare status: 'draft' | 'published'
-
-  @column()
-  declare userId: number
 
   @column.dateTime()
   declare publishedAt: DateTime | null
