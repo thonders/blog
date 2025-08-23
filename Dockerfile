@@ -14,7 +14,7 @@ WORKDIR /var/www
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy existing application directory contents
 COPY . /var/www
