@@ -1,0 +1,24 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: blog
+    container_name: blog-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - tmp:/var/www/tmp
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://127.0.0.1'
+      interval: 2s
+      timeout: 10s
+      retries: 10
+    labels:
+      - 'traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=0.0.0.0/0,::/0'
+      - 'traefik.http.middlewares.add-forwarded-headers.headers.customrequestheaders.X-Forwarded-For=X-Real-IP'
+      - 'traefik.http.middlewares.upload-limit.buffering.maxRequestBodyBytes=67108864'
