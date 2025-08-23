@@ -11,21 +11,32 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 
+interface User {
+  id: number
+  fullName: string
+  username: string
+  email: string
+}
+
 interface Post {
   id: number
   title: string
   slug: string
+  excerpt: string
   content: string
   publishedAt: string
-  user: {
-    fullName: string
-    email: string
-  }
-  categories: Array<{
-    id: number
-    name: string
-    slug: string
-  }>
+  status: string
+  user: User
+  categories: Category[]
+}
+
+interface Category {
+  id: number
+  name: string
+  slug: string
+  description: string | null
+  createdAt: string
+  user: User
 }
 
 defineProps<{

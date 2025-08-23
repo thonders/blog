@@ -45,6 +45,13 @@ import {
   TagsInputItemText,
 } from '@/components/ui/tags-input'
 
+interface User {
+  id: number
+  fullName: string
+  username: string
+  email: string
+}
+
 interface Post {
   id: number
   title: string
@@ -53,16 +60,8 @@ interface Post {
   content: string
   publishedAt: string
   status: string
-  user: {
-    id: number
-    fullName: string
-    email: string
-  }
-  categories: Array<{
-    id: number
-    name: string
-    slug: string
-  }>
+  user: User
+  categories: Category[]
 }
 
 interface Category {
@@ -71,11 +70,7 @@ interface Category {
   slug: string
   description: string | null
   createdAt: string
-  user: {
-    id: number
-    fullName: string
-    email: string
-  }
+  user: User
 }
 
 interface PaginatedPosts {
@@ -94,11 +89,7 @@ interface PaginatedPosts {
 }
 
 interface Auth {
-  user: {
-    id: number
-    fullName: string
-    email: string
-  } | null
+  user: User | null
 }
 
 const props = defineProps<{
@@ -486,7 +477,7 @@ function deletePost(slug: string) {
 
             <Card v-else class="hover:shadow-md transition-shadow">
               <CardContent>
-                <div class="flex justify-between items-start">
+                <div class="flex justify-between items-center mb-3">
                   <div class="flex flex-wrap gap-2">
                     <span
                       v-for="category in post.categories"
@@ -541,7 +532,10 @@ function deletePost(slug: string) {
                 </div>
 
                 <h2 class="text-2xl font-bold text-foreground mb-3">
-                  <Link :href="`/p/${post.slug}`" class="hover:text-primary transition-colors">
+                  <Link
+                    :href="`/${post.user.username}/p/${post.slug}`"
+                    class="hover:text-primary transition-colors"
+                  >
                     {{ post.title }}
                   </Link>
                 </h2>

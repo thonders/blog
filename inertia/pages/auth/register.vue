@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 
 const form = useForm({
   fullName: '',
+  username: '',
   email: '',
   password: '',
   password_confirmation: '',
@@ -62,6 +63,19 @@ function submit() {
                       />
                       <div v-if="form.errors.fullName" class="text-destructive text-sm">
                         {{ form.errors.fullName }}
+                      </div>
+                    </div>
+                    <div class="grid gap-3">
+                      <Label for="username">Username</Label>
+                      <Input
+                        id="username"
+                        v-model="form.username"
+                        type="text"
+                        placeholder="johnsmith"
+                        required
+                      />
+                      <div v-if="form.errors.username" class="text-destructive text-sm">
+                        {{ form.errors.username }}
                       </div>
                     </div>
                     <div class="grid gap-3">

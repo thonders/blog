@@ -25,6 +25,16 @@ export default class AuthController {
     const validator = vine.compile(
       vine.object({
         fullName: vine.string().trim().minLength(2).maxLength(100),
+        username: vine
+          .string()
+          .trim()
+          .minLength(3)
+          .maxLength(30)
+          .regex(/^[a-zA-Z0-9_-]+$/)
+          .unique(async (db, value) => {
+            const user = await db.from('users').where('username', value).first()
+            return !user
+          }),
         email: vine
           .string()
           .trim()
@@ -41,6 +51,7 @@ export default class AuthController {
 
     const user = await User.create({
       fullName: data.fullName,
+      username: data.username,
       email: data.email,
       password: data.password,
     })

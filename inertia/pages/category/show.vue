@@ -12,6 +12,13 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 
+interface User {
+  id: number
+  fullName: string
+  username: string
+  email: string
+}
+
 interface Post {
   id: number
   title: string
@@ -20,11 +27,8 @@ interface Post {
   content: string
   publishedAt: string
   status: string
-  user: {
-    id: number
-    fullName: string
-    email: string
-  }
+  user: User
+  categories: Category[]
 }
 
 interface Category {
@@ -33,11 +37,7 @@ interface Category {
   slug: string
   description: string | null
   createdAt: string
-  user: {
-    id: number
-    fullName: string
-    email: string
-  }
+  user: User
   posts: Post[]
 }
 
@@ -127,7 +127,7 @@ defineProps<{
                     <div class="flex-1">
                       <h3 class="text-xl font-bold text-foreground mb-2">
                         <Link
-                          :href="`/p/${post.slug}`"
+                          :href="`/${post.user.username}/p/${post.slug}`"
                           class="hover:text-primary transition-colors"
                         >
                           {{ post.title }}

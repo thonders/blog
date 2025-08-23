@@ -20,17 +20,20 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 
+interface User {
+  id: number
+  fullName: string
+  username: string
+  email: string
+}
+
 interface Category {
   id: number
   name: string
   slug: string
   description: string | null
   createdAt: string
-  user: {
-    id: number
-    fullName: string
-    email: string
-  }
+  user: User
 }
 
 interface PaginatedCategories {
@@ -49,11 +52,7 @@ interface PaginatedCategories {
 }
 
 interface Auth {
-  user: {
-    id: number
-    fullName: string
-    email: string
-  } | null
+  user: User | null
 }
 
 const props = defineProps<{
@@ -235,7 +234,7 @@ function deleteCategory(slug: string) {
                   <div class="flex-1">
                     <h2 class="text-xl font-bold text-foreground mb-2">
                       <Link
-                        :href="`/categories/${category.slug}`"
+                        :href="`/${category.user.username}/c/${category.slug}`"
                         class="hover:text-primary transition-colors"
                       >
                         {{ category.name }}

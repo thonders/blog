@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import User from '#models/user'
 import Category from '#models/category'
 import vine from '@vinejs/vine'
 
@@ -37,11 +38,16 @@ export default class CategoriesController {
       userId: auth.user!.id,
     })
 
-    return response.redirect().toRoute('categories.show', { slug: category.slug })
+    return response.redirect().toRoute('categories.show', {
+      username: auth.user!.username,
+      slug: category.slug,
+    })
   }
 
   async show({ params, inertia, auth }: HttpContext) {
-    const query = Category.query().where('slug', params.slug)
+    const user = await User.findByOrFail('username', params.username)
+
+    const query = Category.query().where('slug', params.slug).where('userId', user.id)
 
     const category = await query
       .preload('user')
@@ -71,6 +77,8 @@ export default class CategoriesController {
       return response.abort('You can only edit your own categories', 403)
     }
 
+    await category.load('user')
+
     const validator = vine.compile(
       vine.object({
         name: vine.string().trim().minLength(2).maxLength(100),
@@ -96,7 +104,10 @@ export default class CategoriesController {
       })
       .save()
 
-    return response.redirect().toRoute('categories.show', { slug: category.slug })
+    return response.redirect().toRoute('categories.show', {
+      username: category.user.username,
+      slug: category.slug,
+    })
   }
 
   async destroy({ params, response, auth }: HttpContext) {

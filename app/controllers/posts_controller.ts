@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import User from '#models/user'
 import Post from '#models/post'
 import Category from '#models/category'
 import { DateTime } from 'luxon'
@@ -77,11 +78,16 @@ export default class PostsController {
       await post.related('categories').attach(data.categoryIds)
     }
 
-    return response.redirect().toRoute('posts.show', { slug: post.slug })
+    return response.redirect().toRoute('posts.show', {
+      username: auth.user!.username,
+      slug: post.slug,
+    })
   }
 
   async show({ params, inertia, auth }: HttpContext) {
-    const query = Post.query().where('slug', params.slug)
+    const user = await User.findByOrFail('username', params.username)
+
+    const query = Post.query().where('slug', params.slug).where('userId', user.id)
 
     if (auth.user) {
       query.where((builder) => {
@@ -104,6 +110,8 @@ export default class PostsController {
     if (post.userId !== auth.user!.id) {
       return response.abort('You can only edit your own posts', 403)
     }
+
+    await post.load('user')
 
     const validator = vine.compile(
       vine.object({
@@ -155,7 +163,10 @@ export default class PostsController {
       await post.related('categories').sync(data.categoryIds)
     }
 
-    return response.redirect().toRoute('posts.show', { slug: post.slug })
+    return response.redirect().toRoute('posts.show', {
+      username: post.user.username,
+      slug: post.slug,
+    })
   }
 
   async destroy({ params, response, auth }: HttpContext) {

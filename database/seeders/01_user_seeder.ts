@@ -5,6 +5,7 @@ export default class extends BaseSeeder {
   async run() {
     await User.create({
       fullName: 'Admin',
+      username: 'admin',
       email: 'admin@thond.re',
       password: 'Password.123',
     })

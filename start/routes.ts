@@ -11,10 +11,10 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 
 router.get('/', '#controllers/posts_controller.index').as('posts.index')
-router.get('/p/:slug', '#controllers/posts_controller.show').as('posts.show')
+router.get('/:username/p/:slug', '#controllers/posts_controller.show').as('posts.show')
 
 router.get('/categories', '#controllers/categories_controller.index').as('categories.index')
-router.get('/categories/:slug', '#controllers/categories_controller.show').as('categories.show')
+router.get('/:username/c/:slug', '#controllers/categories_controller.show').as('categories.show')
 
 router
   .group(() => {
