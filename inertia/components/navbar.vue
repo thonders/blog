@@ -14,6 +14,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu'
 
 const mode = useColorMode()
 
@@ -44,6 +51,20 @@ function logout() {
           <Link href="/" class="text-xl font-bold text-foreground hover:text-primary transition">
             Blog
           </Link>
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink :class="navigationMenuTriggerStyle()" as-child>
+                  <Link href="/">Posts</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink :class="navigationMenuTriggerStyle()" as-child>
+                  <Link href="/categories">Categories</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
 
         <div class="flex items-center space-x-4">

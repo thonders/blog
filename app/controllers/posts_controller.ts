@@ -25,9 +25,11 @@ export default class PostsController {
       .orderBy('created_at', 'desc')
       .paginate(page, 10)
 
-    const categories = await Category.all()
+    const categories = auth.user
+      ? await Category.query().where('userId', auth.user.id).orderBy('name', 'asc')
+      : []
 
-    return inertia.render('blog/index', {
+    return inertia.render('post/index', {
       posts: posts.serialize(),
       categories: categories.map((cat) => cat.serialize()),
     })
@@ -45,6 +47,16 @@ export default class PostsController {
     )
 
     const data = await request.validateUsing(validator)
+
+    if (data.categoryIds && data.categoryIds.length > 0) {
+      const userCategories = await Category.query()
+        .where('userId', auth.user!.id)
+        .whereIn('id', data.categoryIds)
+
+      if (userCategories.length !== data.categoryIds.length) {
+        return response.abort('You can only use your own categories', 403)
+      }
+    }
 
     const slug = data.title
       .toLowerCase()
@@ -65,7 +77,7 @@ export default class PostsController {
       await post.related('categories').attach(data.categoryIds)
     }
 
-    return response.redirect().toRoute('blog.show', { slug: post.slug })
+    return response.redirect().toRoute('posts.show', { slug: post.slug })
   }
 
   async show({ params, inertia, auth }: HttpContext) {
@@ -81,7 +93,7 @@ export default class PostsController {
 
     const post = await query.preload('user').preload('categories').firstOrFail()
 
-    return inertia.render('blog/show', {
+    return inertia.render('post/show', {
       post: post.serialize(),
     })
   }
@@ -104,6 +116,16 @@ export default class PostsController {
     )
 
     const data = await request.validateUsing(validator)
+
+    if (data.categoryIds && data.categoryIds.length > 0) {
+      const userCategories = await Category.query()
+        .where('userId', auth.user!.id)
+        .whereIn('id', data.categoryIds)
+
+      if (userCategories.length !== data.categoryIds.length) {
+        return response.abort('You can only use your own categories', 403)
+      }
+    }
 
     let slug = post.slug
     if (data.title !== post.title) {
@@ -133,7 +155,7 @@ export default class PostsController {
       await post.related('categories').sync(data.categoryIds)
     }
 
-    return response.redirect().toRoute('blog.show', { slug: post.slug })
+    return response.redirect().toRoute('posts.show', { slug: post.slug })
   }
 
   async destroy({ params, response, auth }: HttpContext) {
@@ -145,6 +167,6 @@ export default class PostsController {
 
     await post.delete()
 
-    return response.redirect().toRoute('blog.index')
+    return response.redirect().toRoute('posts.index')
   }
 }

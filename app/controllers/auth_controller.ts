@@ -14,7 +14,7 @@ export default class AuthController {
 
     await auth.use('web').login(user)
 
-    return response.redirect().toRoute('blog.index')
+    return response.redirect().toRoute('posts.index')
   }
 
   async showRegister({ inertia }: HttpContext) {
@@ -47,7 +47,7 @@ export default class AuthController {
 
     await auth.use('web').login(user)
 
-    return response.redirect().toRoute('blog.index')
+    return response.redirect().toRoute('posts.index')
   }
 
   async logout({ auth, response }: HttpContext) {

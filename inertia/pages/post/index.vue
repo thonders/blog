@@ -69,6 +69,13 @@ interface Category {
   id: number
   name: string
   slug: string
+  description: string | null
+  createdAt: string
+  user: {
+    id: number
+    fullName: string
+    email: string
+  }
 }
 
 interface PaginatedPosts {
@@ -619,9 +626,9 @@ function deletePost(slug: string) {
             <CardDescription class="mb-4">
               Get started by creating your first blog post.
             </CardDescription>
-            <Button v-if="isAuthenticated" @click="startCreating"> Create Your First Post </Button>
+            <Button v-if="isAuthenticated" @click="startCreating">Create Your First Post</Button>
             <Button v-else as-child>
-              <Link href="/register"> Sign up to create posts </Link>
+              <Link href="/register">Sign Up to Create Posts</Link>
             </Button>
           </CardContent>
         </Card>

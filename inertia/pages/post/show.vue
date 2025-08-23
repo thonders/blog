@@ -44,7 +44,7 @@ defineProps<{
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink>
-                  <Link href="/">Home</Link>
+                  <Link href="/">Posts</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
