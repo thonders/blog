@@ -23,4 +23,4 @@ COPY . /var/www
 RUN node ace build
 
 EXPOSE 80
-CMD ["node", "./bin/server.js"]
+CMD ["node", "./build/bin/server.js"]
