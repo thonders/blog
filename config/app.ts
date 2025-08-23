@@ -29,7 +29,7 @@ export const http = defineConfig({
    * Trust proxy configuration for deployment behind reverse proxies
    * like Traefik
    */
-  trustProxy: app.inProduction ? '0.0.0.0/0' : false,
+  trustProxy: app.inProduction ? true : false,
 
   /**
    * Manage cookies configuration. The settings for the session id cookie are
