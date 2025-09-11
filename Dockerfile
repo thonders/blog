@@ -1,26 +1,30 @@
-FROM node:22-alpine
+FROM node:22.16.0-alpine3.22 AS base
 
-# Install system dependencies
-RUN apk add --no-cache \
-    git \
-    curl \
-    bash \
-    sqlite
-
-# Set working directory
-WORKDIR /var/www
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
+# All deps stage
+FROM base AS deps
+WORKDIR /app
+ADD package.json package-lock.json ./
 RUN npm ci
 
-# Copy existing application directory contents
-COPY . /var/www
+# Production only deps stage
+FROM base AS production-deps
+WORKDIR /app
+ADD package.json package-lock.json ./
+RUN npm ci --omit=dev
 
-# Build the application
+# Build stage
+FROM base AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules /app/node_modules
+ADD . .
 RUN node ace build
 
+# Production stage
+FROM base
+ENV NODE_ENV=production
+WORKDIR /app
+RUN mkdir -p tmp && chmod -R 775 tmp
+COPY --from=production-deps /app/node_modules /app/node_modules
+COPY --from=build /app/build /app
 EXPOSE 80
-CMD ["node", "./build/bin/server.js"]
+CMD ["node", "./bin/server.js"]

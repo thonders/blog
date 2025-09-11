@@ -6,9 +6,9 @@ services:
     image: blog
     container_name: blog-app
     restart: unless-stopped
-    working_dir: /var/www
+    working_dir: /app
     volumes:
-      - tmp:/var/www/tmp
+      - tmp:/app/tmp
     healthcheck:
       test:
         - CMD
