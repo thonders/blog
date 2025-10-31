@@ -5,11 +5,11 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
-      table.integer('post_id').unsigned().references('id').inTable('posts').onDelete('CASCADE')
+      table.uuid('id').primary().defaultTo(this.raw('gen_random_uuid()'))
+      table.uuid('post_id').notNullable().references('id').inTable('posts').onDelete('CASCADE')
       table
-        .integer('category_id')
-        .unsigned()
+        .uuid('category_id')
+        .notNullable()
         .references('id')
         .inTable('categories')
         .onDelete('CASCADE')

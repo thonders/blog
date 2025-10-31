@@ -21,14 +21,14 @@ import {
 } from '@/components/ui/alert-dialog'
 
 interface User {
-  id: number
+  id: string
   fullName: string
   username: string
   email: string
 }
 
 interface Category {
-  id: number
+  id: string
   name: string
   slug: string
   description: string | null

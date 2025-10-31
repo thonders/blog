@@ -26,7 +26,7 @@ const mode = useColorMode()
 
 interface Auth {
   user: {
-    id: number
+    id: string
     fullName: string
     email: string
   } | null

@@ -43,7 +43,7 @@ export default class PostsController {
         content: vine.string().trim().minLength(10),
         excerpt: vine.string().trim().maxLength(500).optional(),
         status: vine.enum(['draft', 'published']),
-        categoryIds: vine.array(vine.number()).optional(),
+        categoryIds: vine.array(vine.string().uuid()).optional(),
       })
     )
 
@@ -119,7 +119,7 @@ export default class PostsController {
         content: vine.string().trim().minLength(10),
         excerpt: vine.string().trim().maxLength(500).optional(),
         status: vine.enum(['draft', 'published']),
-        categoryIds: vine.array(vine.number()).optional(),
+        categoryIds: vine.array(vine.string().uuid()).optional(),
       })
     )
 

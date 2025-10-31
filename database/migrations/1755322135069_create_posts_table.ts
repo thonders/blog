@@ -5,8 +5,8 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id').notNullable()
-      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
+      table.uuid('id').primary().defaultTo(this.raw('gen_random_uuid()'))
+      table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE')
       table.string('title').notNullable()
       table.string('slug').notNullable().unique()
       table.text('content').notNullable()

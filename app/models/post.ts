@@ -6,10 +6,10 @@ import Category from '#models/category'
 
 export default class Post extends BaseModel {
   @column({ isPrimary: true })
-  declare id: number
+  declare id: string
 
   @column()
-  declare userId: number
+  declare userId: string
 
   @column()
   declare title: string

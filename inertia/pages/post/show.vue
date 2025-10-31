@@ -12,14 +12,14 @@ import {
 } from '@/components/ui/breadcrumb'
 
 interface User {
-  id: number
+  id: string
   fullName: string
   username: string
   email: string
 }
 
 interface Post {
-  id: number
+  id: string
   title: string
   slug: string
   excerpt: string
@@ -31,7 +31,7 @@ interface Post {
 }
 
 interface Category {
-  id: number
+  id: string
   name: string
   slug: string
   description: string | null
