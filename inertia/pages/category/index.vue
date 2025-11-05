@@ -163,7 +163,7 @@ function deleteCategory(slug: string) {
               </div>
 
               <div class="grid gap-3">
-                <Label for="create-description">Description (Optional)</Label>
+                <Label for="create-description">Description</Label>
                 <Textarea
                   id="create-description"
                   v-model="createForm.description"
@@ -210,7 +210,7 @@ function deleteCategory(slug: string) {
                   </div>
 
                   <div class="grid gap-3">
-                    <Label for="edit-description">Description (Optional)</Label>
+                    <Label for="edit-description">Description</Label>
                     <Textarea
                       id="edit-description"
                       v-model="editForm.description"

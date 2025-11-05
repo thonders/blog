@@ -263,7 +263,7 @@ function deletePost(slug: string) {
               </div>
 
               <div class="grid gap-3">
-                <Label for="create-excerpt">Excerpt (Optional)</Label>
+                <Label for="create-excerpt">Excerpt</Label>
                 <Textarea
                   id="create-excerpt"
                   v-model="createForm.excerpt"
@@ -384,7 +384,7 @@ function deletePost(slug: string) {
                   </div>
 
                   <div class="grid gap-3">
-                    <Label for="edit-excerpt">Excerpt (Optional)</Label>
+                    <Label for="edit-excerpt">Excerpt</Label>
                     <Textarea
                       id="edit-excerpt"
                       v-model="editForm.excerpt"

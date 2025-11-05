@@ -8,7 +8,7 @@ export default class extends BaseSchema {
       table.uuid('id').primary().defaultTo(this.raw('gen_random_uuid()'))
       table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE')
       table.string('title').notNullable()
-      table.string('slug').notNullable().unique()
+      table.string('slug').notNullable()
       table.text('content').notNullable()
       table.text('excerpt').nullable()
       table.string('status').defaultTo('draft')
