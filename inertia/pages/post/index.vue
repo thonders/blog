@@ -115,7 +115,7 @@ const createForm = useForm({
   content: '',
   excerpt: '',
   status: 'draft' as 'draft' | 'published',
-  categoryIds: [] as number[],
+  categoryIds: [] as string[],
 })
 
 const editForm = useForm({
@@ -123,7 +123,7 @@ const editForm = useForm({
   content: '',
   excerpt: '',
   status: 'draft' as 'draft' | 'published',
-  categoryIds: [] as number[],
+  categoryIds: [] as string[],
 })
 
 const { contains } = useFilter({ sensitivity: 'base' })
