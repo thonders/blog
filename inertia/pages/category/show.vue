@@ -47,7 +47,11 @@ defineProps<{
 </script>
 
 <template>
-  <Head :title="category.name" />
+  <Head :title="category.name">
+    <meta name="description" :content="category.description || category.name" />
+    <meta property="og:title" :content="category.name" />
+    <meta property="og:description" :content="category.description || category.name" />
+  </Head>
 
   <App>
     <div class="min-h-screen bg-background">

@@ -214,7 +214,17 @@ function deletePost(slug: string) {
 </script>
 
 <template>
-  <Head title="Home" />
+  <Head title="Posts">
+    <meta
+      name="description"
+      content="Discover stories, thinking, and expertise from writers on any topic."
+    />
+    <meta property="og:title" content="Posts" />
+    <meta
+      property="og:description"
+      content="Discover stories, thinking, and expertise from writers on any topic."
+    />
+  </Head>
 
   <App>
     <div class="min-h-screen bg-background">

@@ -122,7 +122,11 @@ function deleteCategory(slug: string) {
 </script>
 
 <template>
-  <Head title="Categories" />
+  <Head title="Categories">
+    <meta name="description" content="Discover categories from various writers." />
+    <meta property="og:title" content="Categories" />
+    <meta property="og:description" content="Discover categories from various writers." />
+  </Head>
 
   <App>
     <div class="min-h-screen bg-background">
@@ -130,7 +134,7 @@ function deleteCategory(slug: string) {
         <div class="flex justify-between items-center mb-8">
           <div>
             <h1 class="text-3xl font-bold text-foreground">Categories</h1>
-            <p class="text-muted-foreground mt-1">Organize your content with categories.</p>
+            <p class="text-muted-foreground mt-1">Discover categories from various writers.</p>
           </div>
 
           <Button v-if="isAuthenticated" @click="startCreating">Create Category</Button>
