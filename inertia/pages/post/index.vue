@@ -565,7 +565,7 @@ function deletePost(slug: string) {
                   </div>
                   <div class="flex items-center space-x-4">
                     <span v-if="post.publishedAt">
-                      {{ new Date(post.publishedAt).toLocaleDateString('en-UK') }}
+                      {{ new Date(post.publishedAt).toLocaleDateString('en-US') }}
                     </span>
                     <span v-else class="text-muted-foreground">Not published</span>
                   </div>

@@ -101,7 +101,7 @@ defineProps<{
                   <p class="text-sm">
                     Published on
                     {{
-                      new Date(post.publishedAt).toLocaleDateString('en-UK', {
+                      new Date(post.publishedAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -113,7 +113,7 @@ defineProps<{
             </div>
           </header>
 
-          <div class="prose md:prose-lg prose-neutral dark:prose-invert">
+          <div class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg max-w-none">
             <div v-html="post.content" />
           </div>
 

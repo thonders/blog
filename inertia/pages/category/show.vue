@@ -100,7 +100,7 @@ defineProps<{
                   <p class="text-sm">
                     Created on
                     {{
-                      new Date(category.createdAt).toLocaleDateString('en-UK', {
+                      new Date(category.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -153,7 +153,7 @@ defineProps<{
                         </div>
                         <div class="flex items-center space-x-4">
                           <span v-if="post.publishedAt">
-                            {{ new Date(post.publishedAt).toLocaleDateString('en-UK') }}
+                            {{ new Date(post.publishedAt).toLocaleDateString('en-US') }}
                           </span>
                           <span v-else class="text-muted-foreground">Draft</span>
                         </div>
