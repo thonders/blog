@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
 
 @import 'tailwindcss';
 @import 'tw-animate-css';
@@ -79,6 +79,10 @@
 }
 
 @theme inline {
+  --font-sans:
+    'Onest', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: 'Source Code Pro', ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -136,10 +140,6 @@
       height: 0;
     }
   }
-}
-
-@theme {
-  --font-sans: 'Plus Jakarta Sans', 'sans-serif';
 }
 
 @layer base {
