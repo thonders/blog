@@ -2,6 +2,12 @@ import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import Category from '#models/category'
 import vine from '@vinejs/vine'
+import { slugify as translitSlug } from 'transliteration'
+
+function makeSlug(name: string) {
+  const s = translitSlug(name, { lowercase: true, separator: '-' })
+  return s || `${Date.now()}`
+}
 
 export default class CategoriesController {
   async index({ inertia, request }: HttpContext) {
@@ -26,10 +32,7 @@ export default class CategoriesController {
 
     const data = await request.validateUsing(validator)
 
-    const slug = data.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
+    const slug = makeSlug(data.name)
 
     const category = await Category.create({
       name: data.name,
@@ -90,10 +93,7 @@ export default class CategoriesController {
 
     let slug = category.slug
     if (data.name !== category.name) {
-      slug = data.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
+      slug = makeSlug(data.name)
     }
 
     await category

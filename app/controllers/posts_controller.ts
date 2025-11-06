@@ -4,6 +4,12 @@ import Post from '#models/post'
 import Category from '#models/category'
 import { DateTime } from 'luxon'
 import vine from '@vinejs/vine'
+import { slugify as translitSlug } from 'transliteration'
+
+function makeSlug(title: string) {
+  const s = translitSlug(title, { lowercase: true, separator: '-' })
+  return s || `${Date.now()}`
+}
 
 export default class PostsController {
   async index({ inertia, request, auth }: HttpContext) {
@@ -59,10 +65,7 @@ export default class PostsController {
       }
     }
 
-    const slug = data.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
+    const slug = makeSlug(data.title)
 
     const post = await Post.create({
       title: data.title,
@@ -137,10 +140,7 @@ export default class PostsController {
 
     let slug = post.slug
     if (data.title !== post.title) {
-      slug = data.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
+      slug = makeSlug(data.title)
     }
 
     let publishedAt = post.publishedAt
