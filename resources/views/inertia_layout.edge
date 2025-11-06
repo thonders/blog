@@ -25,7 +25,7 @@
       content="index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1"
     />
 
-    @vite(['inertia/css/app.css', 'inertia/app/app.ts', `inertia/pages/${page.component}.vue`])
+    @vite(['inertia/app/app.ts', `inertia/pages/${page.component}.vue`])
     @inertiaHead()
     @stack('dumper')
   </head>
